@@ -1,0 +1,16 @@
+.env
+volumes/
+*.pem
+*.key
+*.crt
+.DS_Store
+*.log
+logs/
+tmp/
+temp/
+*.tmp
+*.swp
+*.swo
+*~
+.vscode/
+*.code-workspace

@@ -1,0 +1,139 @@
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: jeevesgpt-ollama
+    ports:
+      - '11434:11434'
+    volumes:
+      # Persist Ollama models across container restarts
+      - ./volumes/ollama_data:/root/.ollama
+      - ./entrypoint.sh:/entrypoint.sh
+      - ./scripts:/scripts:ro
+      - ./volumes/generated:/generated
+      # Mount your exported certificate here (ollama ubuntu image needs crt file to trust it)
+      - ./Zscaler_Root_CA.crt:/usr/local/share/ca-certificates/Zscaler_Root_CA.crt
+      # Add these commands to update the system trust before running your script
+    entrypoint:
+      - /bin/bash
+      - -c
+      - |
+        apt-get update && apt-get install -y ca-certificates
+        update-ca-certificates
+        /usr/bin/bash /entrypoint.sh
+    environment:
+      - OLLAMA_HOST=0.0.0.0:11434
+      - BASE_MODEL=${BASE_MODEL}
+      - RAG_EMBEDDING_MODEL=${RAG_EMBEDDING_MODEL}
+      - WEBUI_ADMIN_NAME=${WEBUI_ADMIN_NAME}
+    healthcheck:
+      # Test if the model pull is complete via the marker file
+      test: ["CMD-SHELL", "ls /tmp/ollama_ready || exit 1"]
+      interval: 30s # Check every 30 seconds
+      timeout: 5s
+      retries: 60 # Retry up to 60 times (30 minutes total) to allow for model pull and setup
+      start_period: 30s # Wait 30s before starting the first check
+    networks:
+      - local-ai-network
+    # Uncomment below for GPU support (NVIDIA CUDA)
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile.ollama  # Requires CUDA-enabled base image
+
+  postgres:
+    image: postgres:17-alpine
+    container_name: jeevesgpt-postgres
+    depends_on:
+      ollama:
+        condition: service_healthy
+    ports:
+      - '5432:5432'
+    environment:
+      # Use your desired password here
+      - POSTGRES_DB=jeevesgpt
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=2tmgFdyWDekJDKUM
+    volumes:
+      - ./volumes/postgres/data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d jeevesgpt']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - local-ai-network
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: jeevesgpt-pgadmin
+    ports:
+      - '5050:80'
+    environment:
+      # Use your desired email and password here
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
+      - PGADMIN_CONFIG_SERVER_MODE=False
+      - PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED=False
+    volumes:
+      - ./volumes/pgadmin:/var/lib/pgadmin
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - local-ai-network
+
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: jeevesgpt-webui
+    ports:
+      - '3000:8080'
+    env_file: 
+      - .env
+    volumes:
+      - ./volumes/open-webui/data:/app/backend/data
+      # Mount your custom JSON files directly into the data folder
+      - ./jeevesgpt-custom-models.json:/app/backend/data/workspace-models.json:ro
+    environment:
+      # Ollama connection
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - RAG_EMBEDDING_ENGINE=ollama
+      - RAG_EMBEDDING_MODEL=${RAG_EMBEDDING_MODEL}
+      - HF_HUB_OFFLINE=1
+      - WEBUI_URL=http://localhost:3000
+      - CORS_ALLOW_ORIGIN=http://localhost:3000;http://127.0.0.1:3000
+
+      # Database connection
+      - DATABASE_URL=postgresql://postgres:2tmgFdyWDekJDKUM@postgres:5432/jeevesgpt
+
+      # To maintain persistent user login sessions across container restarts and updates, openssl rand -hex 32
+      - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY}
+      - WEBUI_ADMIN_EMAIL=${WEBUI_ADMIN_EMAIL}
+      - WEBUI_ADMIN_PASSWORD=${WEBUI_ADMIN_PASSWORD}
+      - WEBUI_ADMIN_NAME=${WEBUI_ADMIN_NAME}
+      - WEBUI_AUTH=true
+      - ENABLE_SIGNUP=true
+      - DEFAULT_MODELS=jeevesgpt
+      # User Agent for identifying requests from LangChain
+      - USER_AGENT=JeevesGPT/1.0
+
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ollama:
+        condition: service_started
+    networks:
+      - local-ai-network
+
+networks:
+  local-ai-network:
+    driver: bridge
