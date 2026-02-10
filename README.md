@@ -31,8 +31,10 @@ start.bat
 Both scripts will:
 1. Check if Docker is running
 2. Create needed volume folders
-3. Pull the embedding model
+3. Pull the embedding model and base model from `.env`
 4. Start all services with `docker compose up`
+
+You can also skip the scripts and use `docker compose up --build`. The scripts are optional and just pre-pull models to reduce first-run wait time.
 
 ## Manual Startup
 
