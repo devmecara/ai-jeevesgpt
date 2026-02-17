@@ -31,15 +31,14 @@ start.bat
 Both scripts will:
 1. Check if Docker is running
 2. Create needed volume folders
-3. Pull the embedding model and base model from `.env`
-4. Start all services with `docker compose up`
+3. Start all services with `docker compose up --build`
 
-You can also skip the scripts and use `docker compose up --build`. The scripts are optional and just pre-pull models to reduce first-run wait time.
+You can also skip the scripts and use `docker compose up --build`. The scripts are optional.
 
 ## Manual Startup
 
 ```bash
-docker compose up -d
+docker compose up --build
 ```
 
 On first boot, the Ollama container will:
@@ -70,7 +69,7 @@ If you add new values, restart the stack:
 
 ```bash
 docker compose down
-docker compose up -d
+docker compose up --build
 ```
 
 ## Services
@@ -101,8 +100,14 @@ To wipe Open WebUI, Postgres, and pgAdmin data and start fresh:
 Then bring the stack back up:
 
 ```bash
-docker compose up -d
+docker compose up --build
 ```
+
+## Customize the Default Message
+
+The default assistant message is defined in the custom model system prompt inside [entrypoint.sh](entrypoint.sh#L34-L39). Update that `SYSTEM` line to the message you want, then restart with `docker compose up --build`.
+
+If you only want to change the name used in that message, set `WEBUI_ADMIN_NAME` in `.env` and restart.
 
 ## Troubleshooting
 

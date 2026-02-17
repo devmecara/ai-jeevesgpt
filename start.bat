@@ -24,17 +24,8 @@ if exist ".env" (
 if not defined RAG_EMBEDDING_MODEL set "RAG_EMBEDDING_MODEL=nomic-embed-text:latest"
 if not defined BASE_MODEL set "BASE_MODEL=mistral-nemo"
 
-echo Pulling Ollama embedding model: %RAG_EMBEDDING_MODEL%...
-echo This may take a few minutes on first run...
-for /f %%i in ('cd') do set "WORKDIR=%%i"
-docker run --rm -v "%WORKDIR%\volumes\ollama_data:/root/.ollama" ollama/ollama:latest ollama pull %RAG_EMBEDDING_MODEL%
-
-echo Pulling Ollama base model: %BASE_MODEL%...
-docker run --rm -v "%WORKDIR%\volumes\ollama_data:/root/.ollama" ollama/ollama:latest ollama pull %BASE_MODEL%
-
+echo Starting Docker containers with docker compose...
 echo.
-echo Model pull complete. Starting Docker containers with docker compose...
-echo.
-docker compose up
+docker compose up --build
 
 endlocal

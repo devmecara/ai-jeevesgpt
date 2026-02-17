@@ -25,14 +25,6 @@ fi
 RAG_EMBEDDING_MODEL=${RAG_EMBEDDING_MODEL:-nomic-embed-text:latest}
 BASE_MODEL=${BASE_MODEL:-mistral-nemo}
 
-echo "Pulling Ollama embedding model: $RAG_EMBEDDING_MODEL..."
-echo "This may take a few minutes on first run..."
-docker run --rm -v "$(pwd)/volumes/ollama_data:/root/.ollama" ollama/ollama:latest ollama pull "$RAG_EMBEDDING_MODEL"
-
-echo "Pulling Ollama base model: $BASE_MODEL..."
-docker run --rm -v "$(pwd)/volumes/ollama_data:/root/.ollama" ollama/ollama:latest ollama pull "$BASE_MODEL"
-
+echo "Starting Docker containers with docker compose..."
 echo ""
-echo "Model pull complete. Starting Docker containers with docker compose..."
-echo ""
-docker compose up
+docker compose up --build
