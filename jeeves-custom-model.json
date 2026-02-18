@@ -1,0 +1,14 @@
+{
+  "models": [
+    {
+      "id": "jeevesgpt",
+      "name": "JeevesGPT",
+      "model": "jeevesgpt",
+      "provider": "ollama",
+      "type": "llm",
+      "enabled": true,
+      "tags": ["local"],
+      "description": "Custom Ollama model built at startup."
+    }
+  ]
+}
