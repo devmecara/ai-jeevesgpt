@@ -14,28 +14,39 @@ A local, Docker-based AI stack using Open WebUI, Ollama, PostgreSQL, and pgAdmin
 - Docker Desktop (or Docker Engine + Compose)
 - Internet access to pull Ollama models the first time
 
-## Quick Start
+## Configuration
 
-### macOS / Linux
+Copy the example file and fill in your values. Open a terminal and type in (what's between the ``` lines):
 
 ```bash
-./start.sh
+cp env-example .env
 ```
 
-### Windows
+Generate a secure `WEBUI_SECRET_KEY`
 
-```cmd
-start.bat
+- visit https://randomkeygen.com/jwt-secret and enter 'generate'
+- OR open a terminal and type in (what's between the ``` lines):
+
+```bash
+openssl rand -hex 32
 ```
 
-Both scripts will:
-1. Check if Docker is running
-2. Create needed volume folders
-3. Start all services with `docker compose up --build`
+Then edit `.env` directly:
 
-You can also skip the scripts and use `docker compose up --build`. The scripts are optional.
+```dotenv
+PGADMIN_DEFAULT_EMAIL=you@example.com
+PGADMIN_DEFAULT_PASSWORD=your-pgadmin-password
+WEBUI_SECRET_KEY=your-secret-key
+WEBUI_ADMIN_EMAIL=you@example.com
+WEBUI_ADMIN_PASSWORD=your-webui-password
+WEBUI_ADMIN_NAME=Kish
+RAG_EMBEDDING_MODEL=nomic-embed-text:latest
+BASE_MODEL=mistral-nemo
+```
 
-## Manual Startup
+## Quick Start
+
+Open a terminal and type in (what's between the ``` lines):
 
 ```bash
 docker compose up --build
@@ -47,31 +58,6 @@ On first boot, the Ollama container will:
 - Generate a Modelfile at `./volumes/generated/Modelfile.jeevesgpt`
 - Create the `jeevesgpt` model in Ollama
 
-## Configuration
-
-Edit the [ .env ](./.env) file to change models and settings:
-
-```dotenv
-RAG_EMBEDDING_MODEL=nomic-embed-text:latest
-BASE_MODEL=mistral-nemo
-WEBUI_ADMIN_NAME=Kish
-```
-
-To generate or update secrets used by the stack, run:
-
-```bash
-./scripts/configure-secrets.sh
-```
-
-This script writes secure values into `.env` (for example `WEBUI_SECRET_KEY`). Re-run it after a reset or whenever you want to rotate secrets.
-
-If you add new values, restart the stack:
-
-```bash
-docker compose down
-docker compose up --build
-```
-
 ## Services
 
 - Open WebUI: http://localhost:3000
@@ -81,7 +67,7 @@ docker compose up --build
 
 ## Creating the Model Manually
 
-You can regenerate the `jeevesgpt` model without restarting containers:
+You can regenerate the `jeevesgpt` model without restarting containers. Open a terminal and type in (what's between the ``` lines):
 
 ```bash
 ./create-jeevesgpt-model.sh
@@ -91,15 +77,22 @@ This generates a local Modelfile at `./volumes/generated/Modelfile.jeevesgpt.loc
 
 ## Reset Everything
 
-To wipe Open WebUI, Postgres, and pgAdmin data and start fresh:
+To wipe Open WebUI, Postgres, and pgAdmin data and start fresh, open a terminal and type in (what's between the ``` lines):
 
 ```bash
 ./reset.sh
 ```
 
-Then bring the stack back up:
+Then bring the stack back up. Open a terminal and type in (what's between the ``` lines):
 
 ```bash
+docker compose up --build
+```
+
+After changing any values, restart the stack. Open a terminal and type in (what's between the ``` lines):
+
+```bash
+docker compose down
 docker compose up --build
 ```
 
