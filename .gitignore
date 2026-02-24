@@ -2,7 +2,6 @@
 volumes/
 *.pem
 *.key
-*.crt
 .DS_Store
 *.log
 logs/

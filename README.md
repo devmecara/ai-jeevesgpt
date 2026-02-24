@@ -14,10 +14,19 @@ A local, Docker-based AI stack using Open WebUI, Ollama, PostgreSQL, and pgAdmin
 - Docker Desktop (or Docker Engine + Compose)
 - Internet access to pull Ollama models the first time
 
+- If you haven't already downloaded the git repo yet, Open a terminal and type in
+## NOTE: Always type in the commands between ```bash and ``` lines ONLY
+
+```bash
+mkdir ai
+cd ai
+git clone https://github.com/gitphish/ai-jeevesgpt.git
+cd ai-jeevesgpt
+```
+
 ## Configuration
 
-Copy the example file and fill in your values. Open a terminal and type in (what's between the ``` lines):
-
+Copy the example file and fill in your values. Open a terminal and type in:
 ```bash
 cp env-example .env
 ```
@@ -25,13 +34,13 @@ cp env-example .env
 Generate a secure `WEBUI_SECRET_KEY`
 
 - visit https://randomkeygen.com/jwt-secret and enter 'generate'
-- OR open a terminal and type in (what's between the ``` lines):
+- OR open a terminal and type in (what's between the ```bash and ``` lines):
 
 ```bash
 openssl rand -hex 32
 ```
 
-Then edit `.env` directly:
+Then edit `.env` directly by filling in the values below, other than the two MODEL names
 
 ```dotenv
 PGADMIN_DEFAULT_EMAIL=you@example.com
@@ -39,14 +48,14 @@ PGADMIN_DEFAULT_PASSWORD=your-pgadmin-password
 WEBUI_SECRET_KEY=your-secret-key
 WEBUI_ADMIN_EMAIL=you@example.com
 WEBUI_ADMIN_PASSWORD=your-webui-password
-WEBUI_ADMIN_NAME=Kish
+WEBUI_ADMIN_NAME=KishGPT
 RAG_EMBEDDING_MODEL=nomic-embed-text:latest
 BASE_MODEL=mistral-nemo
 ```
 
 ## Quick Start
 
-Open a terminal and type in (what's between the ``` lines):
+Open a terminal and type in:
 
 ```bash
 docker compose up --build
