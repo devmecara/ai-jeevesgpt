@@ -105,6 +105,21 @@ docker compose down
 docker compose up --build
 ```
 
+## Updating the Custom Model Configuration
+
+If you edit `jeeves-custom-model.json`, you need to copy it into the Open WebUI data volume so the container picks up the changes. Open a terminal and type in:
+
+```bash
+cp jeeves-custom-model.json volumes/open-webui/data/workspace-models.json
+```
+
+Then restart the stack:
+
+```bash
+docker compose down
+docker compose up --build
+```
+
 ## Customize the Default Message
 
 The default assistant message is defined in the custom model system prompt inside [entrypoint.sh](entrypoint.sh#L34-L39). Update that `SYSTEM` line to the message you want, then restart with `docker compose up --build`.
@@ -113,6 +128,7 @@ If you only want to change the name used in that message, set `WEBUI_ADMIN_NAME`
 
 ## Troubleshooting
 
+- If you get the following error "Cannot connect to the Docker daemon at unix:///Users/kkhemani/.docker/run/docker.sock. Is the docker daemon running?" make sure Docker is running
 - If model pulls fail, verify Docker is running and your network allows access to model registries.
 - If Open WebUI does not default to `jeevesgpt`, update the default model in the UI settings or recreate the account after a reset.
 - Generated Modelfiles are stored in `./volumes/generated/` for inspection.

@@ -100,8 +100,6 @@ services:
       - .env
     volumes:
       - ./volumes/open-webui/data:/app/backend/data
-      # Mount your custom JSON files directly into the data folder
-      - ./jeeves-custom-model.json:/app/backend/data/workspace-models.json:ro
     environment:
       # Ollama connection
       - OLLAMA_BASE_URL=http://ollama:11434
