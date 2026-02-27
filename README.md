@@ -13,6 +13,7 @@ A local, Docker-based AI stack using Open WebUI, Ollama, PostgreSQL, and pgAdmin
 
 - Docker Desktop (or Docker Engine + Compose)
 - Internet access to pull Ollama models the first time
+- Once you have Docker Desktop installed, open it, go to Settings->Resources and make sure you are setting Memory (RAM) to at least 16 GB and Swap to at least 2 GB
 
 - If you haven't already downloaded the git repo yet, Open a terminal and type in
 ## NOTE: Always type in the commands between ```bash and ``` lines ONLY
@@ -95,14 +96,14 @@ To wipe Open WebUI, Postgres, and pgAdmin data and start fresh, open a terminal 
 Then bring the stack back up. Open a terminal and type in (what's between the ``` lines):
 
 ```bash
-docker compose up --build
+docker compose up --build -d
 ```
 
 After changing any values, restart the stack. Open a terminal and type in (what's between the ``` lines):
 
 ```bash
 docker compose down
-docker compose up --build
+docker compose up --build -d
 ```
 
 ## Updating the Custom Model Configuration
@@ -117,7 +118,7 @@ Then restart the stack:
 
 ```bash
 docker compose down
-docker compose up --build
+docker compose up --build -d
 ```
 
 ## Customize the Default Message
