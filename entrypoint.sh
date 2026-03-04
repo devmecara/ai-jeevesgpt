@@ -27,31 +27,15 @@ ollama pull $RAG_EMBEDDING_MODEL
 echo "Pulling base model: $BASE_MODEL"
 ollama pull $BASE_MODEL
 
-# Create custom model from Modelfile with dynamic substitution
+# Create custom model from shared Modelfile template
 echo "Creating custom $WEBUI_ADMIN_NAME model based on $BASE_MODEL..."
+TEMPLATE_PATH="/Modelfile.template"
 MODELFILE_PATH="/generated/Modelfile.jeevesgpt"
-cat > "$MODELFILE_PATH" << EOF
-# Base model to customize
-FROM $BASE_MODEL
 
-# Custom system prompt
-SYSTEM """You are JeevesGPT, a helpful AI assistant for $WEBUI_ADMIN_NAME. You are knowledgeable, professional, and courteous. Current datetime: $CURRENT_DATETIME."""
-
-# Model parameters
-PARAMETER temperature 0.7
-PARAMETER top_p 0.9
-PARAMETER top_k 40
-PARAMETER num_ctx 4096
-
-# Additional instructions
-TEMPLATE """{{ if .System }}<|system|>
-{{ .System }}</s>
-{{ end }}{{ if .Prompt }}<|user|>
-{{ .Prompt }}</s>
-{{ end }}<|assistant|>
-{{ .Response }}</s>
-"""
-EOF
+sed -e "s|{{BASE_MODEL}}|$BASE_MODEL|g" \
+    -e "s|{{ADMIN_NAME}}|$WEBUI_ADMIN_NAME|g" \
+    -e "s|{{CURRENT_DATETIME}}|$CURRENT_DATETIME|g" \
+    "$TEMPLATE_PATH" > "$MODELFILE_PATH"
 
 echo "Modelfile saved to: $MODELFILE_PATH"
 ollama create jeevesgpt -f "$MODELFILE_PATH"

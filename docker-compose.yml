@@ -9,6 +9,7 @@ services:
       # Persist Ollama models across container restarts
       - ./volumes/ollama_data:/root/.ollama
       - ./entrypoint.sh:/entrypoint.sh
+      - ./Modelfile.template:/Modelfile.template:ro
       - ./scripts:/scripts:ro
       - ./volumes/generated:/generated
       # Mount your exported certificate here (ollama ubuntu image needs crt file to trust it)
@@ -128,7 +129,7 @@ services:
       postgres:
         condition: service_healthy
       ollama:
-        condition: service_started
+        condition: service_healthy
     networks:
       - local-ai-network
 

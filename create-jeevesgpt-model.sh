@@ -21,31 +21,14 @@ fi
 
 echo "Creating $ADMIN_NAME model based on: $BASE_MODEL"
 
-# Create Modelfile in shared generated directory
+# Generate Modelfile from shared template
+TEMPLATE_FILE="./Modelfile.template"
 MODELFILE_LOCAL="./volumes/generated/Modelfile.jeevesgpt.local"
 
-cat > "$MODELFILE_LOCAL" << EOF
-# Base model to customize
-FROM $BASE_MODEL
-
-# Custom system prompt
-SYSTEM """You are a helpful AI bulter for $ADMIN_NAME. Your name is JeevesGPT. You are knowledgeable, professional, and courteous. Current datetime: $CURRENT_DATETIME."""
-
-# Model parameters
-PARAMETER temperature 0.7
-PARAMETER top_p 0.9
-PARAMETER top_k 40
-PARAMETER num_ctx 32768
-
-# Additional instructions
-TEMPLATE """{{ if .System }}<|system|>
-{{ .System }}</s>
-{{ end }}{{ if .Prompt }}<|user|>
-{{ .Prompt }}</s>
-{{ end }}<|assistant|>
-{{ .Response }}</s>
-"""
-EOF
+sed -e "s|{{BASE_MODEL}}|$BASE_MODEL|g" \
+    -e "s|{{ADMIN_NAME}}|$ADMIN_NAME|g" \
+    -e "s|{{CURRENT_DATETIME}}|$CURRENT_DATETIME|g" \
+    "$TEMPLATE_FILE" > "$MODELFILE_LOCAL"
 
 echo "Generated Modelfile locally at: $MODELFILE_LOCAL"
 cat "$MODELFILE_LOCAL"

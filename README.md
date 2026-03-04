@@ -65,7 +65,7 @@ docker compose up --build
 On first boot, the Ollama container will:
 - Pull the embedding model (`RAG_EMBEDDING_MODEL`)
 - Pull the base model (`BASE_MODEL`)
-- Generate a Modelfile at `./volumes/generated/Modelfile.jeevesgpt`
+- Generate a Modelfile at `./volumes/generated/Modelfile.jeevesgpt` from the shared template (`Modelfile.template`)
 - Create the `jeevesgpt` model in Ollama
 
 ## Services
@@ -83,7 +83,7 @@ You can regenerate the `jeevesgpt` model without restarting containers. Open a t
 ./create-jeevesgpt-model.sh
 ```
 
-This generates a local Modelfile at `./volumes/generated/Modelfile.jeevesgpt.local` and rebuilds the Ollama model.
+This generates a local Modelfile at `./volumes/generated/Modelfile.jeevesgpt.local` from the shared template and rebuilds the Ollama model.
 
 ## Reset Everything
 
@@ -121,11 +121,20 @@ docker compose down
 docker compose up --build -d
 ```
 
-## Customize the Default Message
+## Customize the System Prompt
 
-The default assistant message is defined in the custom model system prompt inside [entrypoint.sh](entrypoint.sh#L34-L39). Update that `SYSTEM` line to the message you want, then restart with `docker compose up --build`.
+The system prompt is defined in [`Modelfile.template`](Modelfile.template) at the root of the project. This is the single source of truth used by both the container startup (`entrypoint.sh`) and the manual rebuild script (`create-jeevesgpt-model.sh`).
 
-If you only want to change the name used in that message, set `WEBUI_ADMIN_NAME` in `.env` and restart.
+Edit the `SYSTEM """..."""` block in `Modelfile.template`, then either:
+- Restart the stack: `docker compose down && docker compose up --build -d`
+- Or hot-reload without restarting: `./create-jeevesgpt-model.sh`
+
+The template supports these placeholders that are filled in at build time:
+- `{{BASE_MODEL}}` — from `BASE_MODEL` in `.env`
+- `{{ADMIN_NAME}}` — from `WEBUI_ADMIN_NAME` in `.env`
+- `{{CURRENT_DATETIME}}` — auto-generated at model creation time
+
+If you only want to change the name used in the prompt, set `WEBUI_ADMIN_NAME` in `.env` and restart.
 
 ## Troubleshooting
 
