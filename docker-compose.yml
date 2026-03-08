@@ -12,8 +12,8 @@ services:
       - ./Modelfile.template:/Modelfile.template:ro
       - ./scripts:/scripts:ro
       - ./volumes/generated:/generated
-      # Mount your exported certificate here (ollama ubuntu image needs crt file to trust it)
-      - ./Zscaler_Root_CA.crt:/usr/local/share/ca-certificates/Zscaler_Root_CA.crt
+      # If behind a proxy mount your exported certificate here (ollama ubuntu image needs crt file to trust it)
+      # - ./<your CA cert>.crt:/usr/local/share/ca-certificates/<your CA cert>.crt
       # Add these commands to update the system trust before running your script
     entrypoint:
       - /bin/bash
@@ -60,7 +60,7 @@ services:
       # Use your desired password here
       - POSTGRES_DB=jeevesgpt
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=2tmgFdyWDekJDKUM
+      - POSTGRES_PASSWORD=8tvgLdzWFekJDJKN
     volumes:
       - ./volumes/postgres/data:/var/lib/postgresql/data
     restart: unless-stopped
@@ -111,7 +111,7 @@ services:
       - CORS_ALLOW_ORIGIN=http://localhost:3000;http://127.0.0.1:3000
 
       # Database connection
-      - DATABASE_URL=postgresql://postgres:2tmgFdyWDekJDKUM@postgres:5432/jeevesgpt
+      - DATABASE_URL=postgresql://postgres:8tvgLdzWFekJDJKN@postgres:5432/jeevesgpt
 
       # To maintain persistent user login sessions across container restarts and updates, openssl rand -hex 32
       - WEBUI_SECRET_KEY=${WEBUI_SECRET_KEY}

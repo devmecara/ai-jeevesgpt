@@ -21,7 +21,7 @@ A local, Docker-based AI stack using Open WebUI, Ollama, PostgreSQL, and pgAdmin
 ```bash
 mkdir ai
 cd ai
-git clone https://github.com/gitphish/ai-jeevesgpt.git
+git clone <this repo>
 cd ai-jeevesgpt
 ```
 
@@ -138,7 +138,7 @@ If you only want to change the name used in the prompt, set `WEBUI_ADMIN_NAME` i
 
 ## Troubleshooting
 
-- If you get the following error "Cannot connect to the Docker daemon at unix:///Users/kkhemani/.docker/run/docker.sock. Is the docker daemon running?" make sure Docker is running
+- If you get the following error "Cannot connect to the Docker daemon at <docker installdir>/.docker/run/docker.sock. Is the docker daemon running?" make sure Docker is running
 - If model pulls fail, verify Docker is running and your network allows access to model registries.
 - If Open WebUI does not default to `jeevesgpt`, update the default model in the UI settings or recreate the account after a reset.
 - Generated Modelfiles are stored in `./volumes/generated/` for inspection.
